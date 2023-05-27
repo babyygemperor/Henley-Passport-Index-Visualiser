@@ -24,7 +24,10 @@ visa_required = 'Visa Required'
 
 for origin in code_list:
     origin_country = origin.get('country')
-    origin_code = coco.convert(names=origin.get('code'), to='ISO3')
+    if origin.get('code') == 'FW':
+        origin_code = 'GLP'
+    else:
+        origin_code = coco.convert(names=origin.get('code'), to='ISO3')
     origin_for_count.append(origin_country)
     count_vf = 0
     count_vr = 0
@@ -32,7 +35,10 @@ for origin in code_list:
     data = res.json()
     for destination in data['default']:
         destination_country = destination.get('name')
-        destination_code = coco.convert(names=destination.get('code'), to='ISO3')
+        if destination.get('code') == 'FW':
+            destination_code = 'GLP'
+        else:
+            destination_code = coco.convert(names=destination.get('code'), to='ISO3')
         origin_lst.append(origin_country)
         origin_code_lst.append(origin_code)
         destination_lst.append(destination_country)
@@ -59,7 +65,8 @@ today_date = datetime.today().strftime('%Y-%m-%d')
 file_name = "henley-passport-index" + "-" + today_date + ".csv"
 
 pd_1 = pd.DataFrame({'Origin': origin_lst, 'Origin Code': origin_code_lst,
-                     'Destination': destination_lst, 'Destination Code': destination_code_lst, 'Requirement': requirement})
+                     'Destination': destination_lst, 'Destination Code': destination_code_lst,
+                     'Requirement': requirement})
 pd_1.to_csv(file_name, index=False)
 
 # filter unique countries in origin_lst
