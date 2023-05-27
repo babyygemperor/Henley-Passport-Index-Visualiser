@@ -62,8 +62,8 @@ def create_map(country):
         name='choropleth',
         style_function=lambda feature: {
             'fillColor': colour_dict[
-                data[data['Destination'] == feature['properties']['ADMIN']]['Requirement'].values[0]]
-            if not data[data['Destination'] == feature['properties']['ADMIN']].empty else 'grey',
+                data[data['Destination Code'] == feature['properties']['ISO_A3']]['Requirement'].values[0]]
+            if not data[data['Destination Code'] == feature['properties']['ISO_A3']].empty else 'grey',
             'color': 'black',
             'weight': 0.5,
             'fillOpacity': 0.7,
@@ -78,3 +78,13 @@ def create_map(country):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+def find_visa_required_countries(country):
+    df_local = df[(df['Origin'] == country) & (df['Requirement'] == 'Visa Required')]
+    return df_local['Destination'].values.tolist()
+
+
+def find_visa_free_countries(country):
+    df_local = df[(df['Origin'] == country) & (df['Requirement'] != 'Visa Required')]
+    return df_local['Destination'].values.tolist()
