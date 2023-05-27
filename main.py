@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import pandas as pd
 import folium
 import json
+from folium import MacroElement
+from jinja2 import Template
 
 app = Flask(__name__, static_folder='static')
 
@@ -22,10 +24,24 @@ def index():
     return render_template('index.html', countries=countries, show_map=show_map)
 
 
+class NoWrapTiles(MacroElement):
+    def __init__(self):
+        super(NoWrapTiles, self).__init__()
+        self._template = Template(u"""
+            {% macro script(this, kwargs) %}
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    noWrap: true,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                }).addTo({{ this._parent.get_name() }});
+            {% endmacro %}
+            """)
+
+
 def create_map(country):
     data = df[df['Origin'] == country]
     # Initialise the map:
-    m = folium.Map(location=[0, 0], zoom_start=2)
+    m = folium.Map(location=[0, 0], zoom_start=2, min_zoom=2)
+    m.add_child(NoWrapTiles())
 
     # Load the GeoJSON data
     with open('world.geojson') as f:

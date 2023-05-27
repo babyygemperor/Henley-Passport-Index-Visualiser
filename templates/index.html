@@ -3,7 +3,7 @@
 <html lang="en-GB">
 <head>
   <title>Select Country</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <div class="container">
@@ -17,12 +17,13 @@
       </select>
       <button type="submit" class="form-button">Show Map</button>
     </form>
-
-    {% if show_map %}
-      <div class="map-container">
-        <iframe src="{{ url_for('static', filename='map.html') }}" height="600" width="100%"></iframe>
-      </div>
-    {% endif %}
+    <div class="map-container">
+      {% if show_map %}
+        <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
+      {% else %}
+        <p>Select a country to display its map.</p>
+      {% endif %}
+    </div>
   </div>
 </body>
 </html>
