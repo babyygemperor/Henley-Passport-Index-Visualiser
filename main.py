@@ -18,7 +18,7 @@ def index():
         show_map = True
         country = request.form.get('select_country')
         m = create_map(country)
-        m.save('templates/map.html')
+        m.save('static/map.html')
     return render_template('index.html', countries=countries, show_map=show_map)
 
 
