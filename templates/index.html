@@ -55,11 +55,19 @@
         {% if show_map %}
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
         <div class="visa-list-container">
-            <h3 class="selected-country">{{ selected_country }}</h3>
-            <p class="visa-free-score">Visa Free Score: {{ visa_free_score }}</p>
+            <div class="country-container">
+                <img src="{{ url_for('static', filename='flags/flag_' + country_A3 + '.svg') }}"
+                         class="main-country-flag" alt="{{ country }} flag">
+                <div class="country-container-text">
+                    <h3 class="selected-country">{{ selected_country }}</h3>
+                    <p class="visa-free-score">Visa Free Score: {{ visa_free_score }}</p>
+                </div>
+            </div>
             <div class="visa-list">
                 {% for data in visa_data %}
                 <div class="visa-list-item">
+                    <img src="{{ url_for('static', filename='flags/flag_' + data.country_A3 + '.svg') }}"
+                         class="country-flag" alt="{{ data.country }} flag">
                     <div class="country-card">
                         <div class="country-name">{{ data.country }}</div>
                     </div>

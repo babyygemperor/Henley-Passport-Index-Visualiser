@@ -31,7 +31,8 @@ def find_visa_free_countries(country):
 
 def get_country_requirement_list(country):
     return df[df['Origin'] == country].drop('Origin', axis=1).rename(
-        columns={"Destination": "country", "Requirement": "status"}).replace({numpy.nan: country}).to_dict('records')
+        columns={"Destination": "country", "Requirement": "status", 'Destination Code': 'country_A3'}) \
+        .replace({numpy.nan: country}).to_dict('records')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,7 +45,8 @@ def index():
         m.save('static/map.html')
         return render_template('index.html', countries=countries, show_map=show_map, selected_country=country,
                                visa_data=get_country_requirement_list(country),
-                               visa_free_score=get_visa_free_score(country))
+                               visa_free_score=get_visa_free_score(country),
+                               country_A3=df[df['Origin'] == country]['Origin Code'].unique()[0])
     return render_template('index.html', countries=countries, show_map=show_map)
 
 
