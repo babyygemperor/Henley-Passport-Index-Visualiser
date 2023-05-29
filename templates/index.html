@@ -2,28 +2,57 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-  <title>Select Country</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Select Country</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <h1 class="title">Visa Requirement Map</h1>
+    <div class="dark-mode-wrapper">
+        <button onclick="toggleDarkMode()" id="dark-mode-btn">Toggle Dark Mode</button>
+    </div>
+    <script>
+        // Get the dark mode setting from localStorage.
+        let darkMode = localStorage.getItem('darkMode');
+
+        // If the dark mode setting is 'enabled', start the body with the dark-mode class.
+        if (darkMode === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
+        }
+
+        function toggleDarkMode() {
+            // Check for the dark-mode class.
+            let isDarkMode = document.body.classList.toggle('dark-mode');
+
+            // Update the dark mode setting in localStorage.
+            if (isDarkMode) {
+                localStorage.setItem('darkMode', 'enabled');
+                document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
+            } else {
+                localStorage.setItem('darkMode', null);
+                document.getElementById("dark-mode-btn").innerHTML = "Toggle Dark Mode";
+            }
+        }
+    </script>
+
     <form method="POST" class="form-control">
-      <label for="select_country" class="form-label">Select Country</label>
-      <select name="select_country" id="select_country" class="form-select">
-        {% for country in countries %}
-          <option value="{{ country }}">{{ country }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" class="form-button">Show Map</button>
+        <label for="select_country" class="form-label">Select Country</label>
+        <select name="select_country" id="select_country" class="form-select">
+            {% for country in countries %}
+            <option value="{{ country }}" {% if selected_country== country %} selected {% endif %}>{{ country }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="form-button">Show Map</button>
     </form>
     <div class="map-container">
-      {% if show_map %}
+        {% if show_map %}
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
-      {% else %}
-        <p>Select a country to display its map.</p>
-      {% endif %}
+        {% else %}
+        <p STYLE="text-align: center">Select a country to display its map.</p>
+        {% endif %}
     </div>
-  </div>
+</div>
 </body>
 </html>
