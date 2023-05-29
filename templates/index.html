@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="title">Visa Requirement Map</h1>
+    <h1 class="title">Visa Requirements Map</h1>
     <div class="dark-mode-wrapper">
         <button onclick="toggleDarkMode()" id="dark-mode-btn">Toggle Dark Mode</button>
     </div>
@@ -49,6 +49,20 @@
     <div class="map-container">
         {% if show_map %}
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
+        <div class="visa-list-container">
+            <div class="visa-list">
+                {% for data in visa_data %}
+                <div class="visa-list-item">
+                    <div class="country-card">
+                        <div class="country-name">{{ data.country }}</div>
+                    </div>
+                    <div class="visa-status-card {% if data.status == 'Visa Required' %}visa-required{% elif data.status == 'Visa Free' %}visa-free{% elif data.status == 'eVisa' %}e-visa{% else %}self{% endif %}">
+                        <div class="visa-status">{{ data.status }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
         {% else %}
         <iframe src="{{ url_for('static', filename='empty_map.html') }}" height="100%" width="100%"></iframe>
         {% endif %}

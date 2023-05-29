@@ -1,3 +1,4 @@
+import numpy
 from flask import Flask, render_template, request
 import pandas as pd
 import folium
@@ -13,6 +14,21 @@ df = pd.read_csv('visa_requirements.csv')
 countries = df['Origin'].unique().tolist()
 
 
+def find_visa_required_countries(country):
+    df_local = df[(df['Origin'] == country) & (df['Requirement'] == 'Visa Required')]
+    return df_local['Destination'].values.tolist()
+
+
+def find_visa_free_countries(country):
+    df_local = df[(df['Origin'] == country) & (df['Requirement'] != 'Visa Required')]
+    return df_local['Destination'].values.tolist()
+
+
+def get_country_requirement_list(country):
+    return df[df['Origin'] == country].drop('Origin', axis=1).rename(
+        columns={"Destination": "country", "Requirement": "status"}).replace({numpy.nan: country}).to_dict('records')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     show_map = False
@@ -21,7 +37,8 @@ def index():
         country = request.form.get('select_country')
         m = create_map(country)
         m.save('static/map.html')
-        return render_template('index.html', countries=countries, show_map=show_map, selected_country=country)
+        return render_template('index.html', countries=countries, show_map=show_map, selected_country=country,
+                               visa_data=get_country_requirement_list(country))
     return render_template('index.html', countries=countries, show_map=show_map)
 
 
@@ -79,13 +96,3 @@ def create_map(country):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-def find_visa_required_countries(country):
-    df_local = df[(df['Origin'] == country) & (df['Requirement'] == 'Visa Required')]
-    return df_local['Destination'].values.tolist()
-
-
-def find_visa_free_countries(country):
-    df_local = df[(df['Origin'] == country) & (df['Requirement'] != 'Visa Required')]
-    return df_local['Destination'].values.tolist()
