@@ -51,10 +51,14 @@ def index():
 class NoWrapTiles(MacroElement):
     def __init__(self):
         super(NoWrapTiles, self).__init__()
-        self._template = Template(u"""{% macro script(this, kwargs) %} L.tileLayer('https://{
-        s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { noWrap: true, attribution: '&copy; <a 
-        href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', }).addTo({{ 
-        this._parent.get_name() }}); {% endmacro %} """)
+        self._template = Template(u"""
+        {% macro script(this, kwargs) %}
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                noWrap: true,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo({{ this._parent.get_name() }});
+        {% endmacro %}
+        """)
 
 
 def create_map(country):
