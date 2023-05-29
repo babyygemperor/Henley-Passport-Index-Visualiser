@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-    <title>Select Country</title>
+    <title>Visa Requirements Map</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -15,10 +15,14 @@
         // Get the dark mode setting from localStorage.
         let darkMode = localStorage.getItem('darkMode');
 
-        // If the dark mode setting is 'enabled', start the body with the dark-mode class.
-        if (darkMode === 'enabled') {
+        // If the dark mode setting is 'enabled' or null (i.e., not yet set), start the body with the dark-mode class.
+        if (darkMode === 'enabled' || darkMode === null) {
             document.body.classList.add('dark-mode');
             document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
+            // If dark mode was not set before, set it to 'enabled' in localStorage.
+            if (darkMode === null) {
+                localStorage.setItem('darkMode', 'enabled');
+            }
         }
 
         function toggleDarkMode() {
@@ -36,6 +40,7 @@
         }
     </script>
 
+
     <form method="POST" class="form-control">
         <label for="select_country" class="form-label">Select Country</label>
         <select name="select_country" id="select_country" class="form-select">
@@ -50,6 +55,7 @@
         {% if show_map %}
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
         <div class="visa-list-container">
+            <h3 class="selected-country">{{ selected_country }}</h3>
             <div class="visa-list">
                 {% for data in visa_data %}
                 <div class="visa-list-item">

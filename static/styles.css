@@ -150,6 +150,12 @@ body.dark-mode .map-container {
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
 }
 
+.visa-list {
+  width: 100%;          /* Adjust as necessary */
+  max-height: 80vh;     /* Adjust as necessary */
+  overflow-y: auto;     /* New property */
+}
+
 .country-card {
   flex: 1;
   padding: 10px;
@@ -190,6 +196,7 @@ body.dark-mode .map-container {
 /* Dark Mode Colors */
 body.dark-mode .visa-required {
   background-color: #800000;
+  color: #EEEEEE;
 }
 
 body.dark-mode .visa-free {
@@ -212,4 +219,10 @@ body.dark-mode .country-card {
 
 body.dark-mode .self {
   background-color: darkblue;
+}
+
+.selected-country {
+  text-align: center;  /* Center the text */
+  font-size: 1.5em;  /* Make the font a bit larger than normal text */
+  margin-bottom: 20px; /* Add some space below the heading */
 }
