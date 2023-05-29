@@ -94,7 +94,12 @@ def create_map(country):
             'weight': 0.5,
             'fillOpacity': 0.7,
             'lineOpacity': 0.2,
-        }
+        },
+        tooltip=folium.GeoJsonTooltip(
+            fields=['ADMIN'],
+            aliases=['Country:'],
+            localize=True
+        )
     ).add_to(m)
 
     folium.LayerControl().add_to(m)
