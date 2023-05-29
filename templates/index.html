@@ -56,6 +56,7 @@
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
         <div class="visa-list-container">
             <h3 class="selected-country">{{ selected_country }}</h3>
+            <p class="visa-free-score">Visa Free Score: {{ visa_free_score }}</p>
             <div class="visa-list">
                 {% for data in visa_data %}
                 <div class="visa-list-item">

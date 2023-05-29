@@ -224,5 +224,11 @@ body.dark-mode .self {
 .selected-country {
   text-align: center;  /* Center the text */
   font-size: 1.5em;  /* Make the font a bit larger than normal text */
+  margin-bottom: -5px; /* Add some space below the heading */
+}
+
+.visa-free-score {
+  text-align: center;  /* Center the text */
+  font-size: 1em;  /* Make the font a bit larger than normal text */
   margin-bottom: 20px; /* Add some space below the heading */
 }

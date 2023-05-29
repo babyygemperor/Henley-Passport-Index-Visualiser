@@ -10,8 +10,13 @@ app = Flask(__name__, static_folder='static')
 
 # Load the visa requirements data
 df = pd.read_csv('visa_requirements.csv')
+score_df = pd.read_csv('visa_free_statistics.csv')
 # Load data
 countries = df['Origin'].unique().tolist()
+
+
+def get_visa_free_score(country):
+    return score_df[(score_df['Origin'] == country)]['Visa Free'].values[0]
 
 
 def find_visa_required_countries(country):
@@ -38,21 +43,18 @@ def index():
         m = create_map(country)
         m.save('static/map.html')
         return render_template('index.html', countries=countries, show_map=show_map, selected_country=country,
-                               visa_data=get_country_requirement_list(country))
+                               visa_data=get_country_requirement_list(country),
+                               visa_free_score=get_visa_free_score(country))
     return render_template('index.html', countries=countries, show_map=show_map)
 
 
 class NoWrapTiles(MacroElement):
     def __init__(self):
         super(NoWrapTiles, self).__init__()
-        self._template = Template(u"""
-            {% macro script(this, kwargs) %}
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    noWrap: true,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                }).addTo({{ this._parent.get_name() }});
-            {% endmacro %}
-            """)
+        self._template = Template(u"""{% macro script(this, kwargs) %} L.tileLayer('https://{
+        s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { noWrap: true, attribution: '&copy; <a 
+        href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', }).addTo({{ 
+        this._parent.get_name() }}); {% endmacro %} """)
 
 
 def create_map(country):
