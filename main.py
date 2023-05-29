@@ -21,7 +21,8 @@ def index():
         country = request.form.get('select_country')
         m = create_map(country)
         m.save('static/map.html')
-    return render_template('index.html', countries=countries, show_map=show_map, selected_country=country)
+        return render_template('index.html', countries=countries, show_map=show_map, selected_country=country)
+    return render_template('index.html', countries=countries, show_map=show_map)
 
 
 class NoWrapTiles(MacroElement):

@@ -50,7 +50,7 @@
         {% if show_map %}
         <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
         {% else %}
-        <p STYLE="text-align: center">Select a country to display its map.</p>
+        <iframe src="{{ url_for('static', filename='empty_map.html') }}" height="100%" width="100%"></iframe>
         {% endif %}
     </div>
 </div>
