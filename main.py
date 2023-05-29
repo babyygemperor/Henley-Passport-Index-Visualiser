@@ -41,6 +41,7 @@ def index():
     if request.method == 'POST':
         show_map = True
         country = request.form.get('select_country')
+        print(f"\t{str(country).upper()}")
         m = create_map(country)
         m.save('static/map.html')
         return render_template('index.html', countries=countries, show_map=show_map, selected_country=country,
