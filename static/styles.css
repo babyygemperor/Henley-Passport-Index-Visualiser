@@ -87,18 +87,37 @@ body {
     background-color: #1F2741;
 }
 
-.map-container {
+
+.map-and-visa-container {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
-    height: 80%; /* Adjust this value as per your requirements */
+    height: 80%;
+}
+
+.map-container {
+    order: 1;
+    width: 80%;
+    height: 100%;
     background-color: #ddd;
     margin-top: 10px;
     margin-bottom: 10px;
     border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row; /* Change this to row */
-    align-items: flex-start; /* Change this to flex-start */
 }
+
+.visa-list-container {
+    order: 2;
+    height: 100%;
+    width: 20%;
+    background-color: #ddd;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 
 body.dark-mode {
     background-color: #2E3A59;
@@ -130,15 +149,8 @@ body.dark-mode .map-container {
     background-color: #1F2741;
 }
 
-.visa-list-container {
-    height: 100%;
-    width: 30%; /* or whatever width you prefer */
-    overflow-y: auto;
-    margin-top: 10px;
-    padding-bottom: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+body.dark-mode .visa-list-container {
+    background-color: #1F2741;
 }
 
 .visa-list-item {

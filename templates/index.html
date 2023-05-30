@@ -4,6 +4,15 @@
 <head>
     <title>Visa Requirements Map</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+
+    <!-- Link to the Leaflet JavaScript Library -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
 </head>
 <body>
 <div class="container">
@@ -11,79 +20,219 @@
     <div class="dark-mode-wrapper">
         <button onclick="toggleDarkMode()" id="dark-mode-btn">Toggle Dark Mode</button>
     </div>
-    <script>
-        // Get the dark mode setting from localStorage.
-        let darkMode = localStorage.getItem('darkMode');
-
-        // If the dark mode setting is 'enabled' or null (i.e., not yet set), start the body with the dark-mode class.
-        if (darkMode === 'enabled' || darkMode === null) {
-            document.body.classList.add('dark-mode');
-            document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
-            // If dark mode was not set before, set it to 'enabled' in localStorage.
-            if (darkMode === null) {
-                localStorage.setItem('darkMode', 'enabled');
-            }
-        }
-
-        function toggleDarkMode() {
-            // Check for the dark-mode class.
-            let isDarkMode = document.body.classList.toggle('dark-mode');
-
-            // Update the dark mode setting in localStorage.
-            if (isDarkMode) {
-                localStorage.setItem('darkMode', 'enabled');
-                document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
-            } else {
-                localStorage.setItem('darkMode', null);
-                document.getElementById("dark-mode-btn").innerHTML = "Toggle Dark Mode";
-            }
-        }
-    </script>
-
-
     <form method="POST" class="form-control">
         <label for="select_country" class="form-label">Select Country</label>
         <select name="select_country" id="select_country" class="form-select">
-            {% for country in countries %}
-            <option value="{{ country }}" {% if selected_country== country %} selected {% endif %}>{{ country }}
-            </option>
-            {% endfor %}
         </select>
-        <button type="submit" class="form-button">Show Map</button>
+        <button type="button" onclick="fetchCountryData()" class="form-button">Show Map</button>
     </form>
-    <div class="map-container">
-        {% if show_map %}
-        <iframe src="{{ url_for('static', filename='map.html') }}" height="100%" width="100%"></iframe>
-        <div class="visa-list-container">
-            <div class="country-container">
-                <img src="{{ url_for('static', filename='flags/flag_' + country_A3 + '.svg') }}"
-                         class="main-country-flag" alt="{{ country }} flag">
-                <div class="country-container-text">
-                    <h3 class="selected-country">{{ selected_country }}</h3>
-                    <p class="visa-free-score">Visa Free Score: {{ visa_free_score }}</p>
-                </div>
-            </div>
-            <div class="visa-list">
-                {% for data in visa_data %}
-                <a href="/{{data.country}}" style="text-decoration:none">
-                <div class="visa-list-item">
-                    <img src="{{ url_for('static', filename='flags/flag_' + data.country_A3 + '.svg') }}"
-                         class="country-flag" alt="{{ data.country }} flag">
-                    <div class="country-card">
-                        <div class="country-name">{{ data.country }}</div>
-                    </div>
-                    <div class="visa-status-card {% if data.status == 'Visa Required' %}visa-required{% elif data.status == 'Visa Free' %}visa-free{% elif data.status == 'eVisa' %}e-visa{% else %}self{% endif %}">
-                        <div class="visa-status">{{ data.status }}</div>
-                    </div>
-                </div>
-                </a>
-                {% endfor %}
-            </div>
+    <div class="map-and-visa-container">
+        <div class="map-container" id="map-container">
         </div>
-        {% else %}
-        <iframe src="{{ url_for('static', filename='empty_map.html') }}" height="100%" width="100%"></iframe>
-        {% endif %}
+        <div class="visa-list-container"></div>
     </div>
 </div>
+</div>
+</div>
+<script>
+    let darkMode = localStorage.getItem('darkMode');
+
+    // If the dark mode setting is 'enabled' or null (i.e., not yet set), start the body with the dark-mode class.
+    if (darkMode === 'enabled' || darkMode === null) {
+        document.body.classList.add('dark-mode');
+        document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
+        // If dark mode was not set before, set it to 'enabled' in localStorage.
+        if (darkMode === null) {
+            localStorage.setItem('darkMode', 'enabled');
+        }
+    }
+
+    function toggleDarkMode() {
+        // Check for the dark-mode class.
+        let isDarkMode = document.body.classList.toggle('dark-mode');
+
+        // Update the dark mode setting in localStorage.
+        if (isDarkMode) {
+            localStorage.setItem('darkMode', 'enabled');
+            document.getElementById("dark-mode-btn").innerHTML = "Toggle Light Mode";
+        } else {
+            localStorage.setItem('darkMode', null);
+            document.getElementById("dark-mode-btn").innerHTML = "Toggle Dark Mode";
+        }
+    }
+
+    class NoWrapTiles {
+        constructor(map) {
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                noWrap: true,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+    }
+
+    var m = null;
+
+    function create_map(country, data) {
+        // Initialise the map:
+        if (m !== null) {
+            m.remove();
+        }
+        m = L.map('map-container', {center: [20, 0], zoom: 2.4, minZoom: 2});
+        new NoWrapTiles(m);
+
+        // Create a colour dictionary
+        console.log(country, data)
+        var colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
+        // Load the GeoJSON data
+        fetch("{{url_for('static', filename='world.geojson')}}").then(response => response.json()).then(geojson_data => {
+
+            L.geoJSON(geojson_data, {
+                style: function (feature) {
+                    let value = 'N/A';  // default to 'N/A'
+                    const found = data.find(row => row['country_A3'] === feature.properties.ISO_A3);
+                    if (found) {
+                        if (found['country'] === country) {
+                            return {
+                                fillColor: 'blue',
+                                color: 'black',
+                                weight: 0.5,
+                                fillOpacity: 0.7,
+                                lineOpacity: 0.2,
+                            };
+                        }
+                        value = found.status;
+                    }
+                    return {
+                        fillColor: colour_dict[value],
+                        color: 'black',
+                        weight: 0.5,
+                        fillOpacity: 0.7,
+                        lineOpacity: 0.2,
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    layer.bindTooltip('Country: ' + feature.properties.ADMIN);
+                }
+            }).addTo(m);
+        });
+
+        return m;
+    }
+
+    document.getElementById('select_country').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') {
+            fetchCountryData()
+        }
+    });
+
+
+    function fetchCountryData() {
+        let selectedCountry = $('#select_country').val();
+        $.post({
+            url: 'http://127.0.0.1:5000/country',
+            data: JSON.stringify({country: selectedCountry}),
+            contentType: 'application/json',
+            success: function (response) {
+                $('#map-container').empty(); // clear map container
+                $('#map-container').append(create_map(selectedCountry, response));
+                createVisaList(response)
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Populate country dropdown on page load
+    $(document).ready(function () {
+        $.get('http://127.0.0.1:5000/countries', function (data, status) {
+            // Assuming 'data' is a JSON object containing an array of countries
+            for (let country of data) {
+                $('#select_country').append(new Option(country, country));
+            }
+        });
+    });
+
+    function createVisaList(visa_data) {
+        const parentContainer = document.querySelector('#map-and-visa-container');
+
+        // Check if '.visa-list-container' already exists, if not create it
+        let visaListContainer = document.querySelector('.visa-list-container');
+        if (!visaListContainer) {
+            visaListContainer = document.createElement('div');
+            visaListContainer.classList.add('visa-list-container');
+        } else {
+            // Clear any existing content
+            visaListContainer.innerHTML = '';
+        }
+
+        // Create container for '.visa-list'
+        const container = document.createElement('div');
+        container.classList.add('visa-list');
+
+        // Create elements for each item in the data
+
+        // Create elements for each item in the data
+        for (const data of visa_data) {
+
+            // Create elements for each item in the data
+            const link = document.createElement('a');
+            link.href = '/' + data.country;
+            link.style.textDecoration = 'none';
+
+            // Create item container
+            const item = document.createElement('div');
+            item.classList.add('visa-list-item');
+
+            // Create flag image
+            const img = document.createElement('img');
+            img.src = '/static/flags/flag_' + data.country_A3 + '.svg';
+            img.classList.add('country-flag');
+            img.alt = data.country + ' flag';
+
+            // Create country card
+            const countryCard = document.createElement('div');
+            countryCard.classList.add('country-card');
+
+            // Add country name
+            const countryName = document.createElement('div');
+            countryName.classList.add('country-name');
+            countryName.textContent = data.country;
+
+            // Create visa status card
+            const visaStatusCard = document.createElement('div');
+            visaStatusCard.classList.add('visa-status-card');
+            if (data.status === 'Visa Required') {
+                visaStatusCard.classList.add('visa-required');
+            } else if (data.status === 'Visa Free') {
+                visaStatusCard.classList.add('visa-free');
+            } else if (data.status === 'eVisa') {
+                visaStatusCard.classList.add('e-visa');
+            } else {
+                visaStatusCard.classList.add('self');
+            }
+
+            // Add visa status
+            const visaStatus = document.createElement('div');
+            visaStatus.classList.add('visa-status');
+            visaStatus.textContent = data.status;
+
+            // Assemble elements
+            countryCard.appendChild(countryName);
+            visaStatusCard.appendChild(visaStatus);
+            item.appendChild(img);
+            item.appendChild(countryCard);
+            item.appendChild(visaStatusCard);
+            link.appendChild(item);
+            container.appendChild(link);
+        }
+        // Append the created '.visa-list' container to the '.visa-list-container'
+        visaListContainer.appendChild(container);
+
+        // Append the created '.visa-list-container' to the parent container
+        parentContainer.appendChild(visaListContainer);
+    }
+
+</script>
 </body>
 </html>
