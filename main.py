@@ -1,5 +1,5 @@
 import numpy
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, jsonify
 import pandas as pd
 import folium
 import json
@@ -33,6 +33,16 @@ def get_country_requirement_list(country):
     return df[df['Origin'] == country].drop('Origin', axis=1).rename(
         columns={"Destination": "country", "Requirement": "status", 'Destination Code': 'country_A3'}) \
         .replace({numpy.nan: country}).to_dict('records')
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect('/')
+
+
+@app.route('/country', methods=['POST'])
+def get_country_details():
+    return jsonify(get_country_requirement_list(request.json.get('country')))
 
 
 @app.route('/', methods=['GET', 'POST'])

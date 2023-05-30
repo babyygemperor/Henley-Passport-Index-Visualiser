@@ -65,6 +65,7 @@
             </div>
             <div class="visa-list">
                 {% for data in visa_data %}
+                <a href="/{{data.country}}" style="text-decoration:none">
                 <div class="visa-list-item">
                     <img src="{{ url_for('static', filename='flags/flag_' + data.country_A3 + '.svg') }}"
                          class="country-flag" alt="{{ data.country }} flag">
@@ -75,6 +76,7 @@
                         <div class="visa-status">{{ data.status }}</div>
                     </div>
                 </div>
+                </a>
                 {% endfor %}
             </div>
         </div>
