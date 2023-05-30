@@ -68,6 +68,7 @@
     }
 
     let m = null;
+    let scrollPosition = 0;
 
     function init_map() {
         if (m !== null) {
@@ -133,8 +134,14 @@
     });
 
 
-    function fetchCountryData(country=null) {
+    function fetchCountryData(country = null) {
         let selectedCountry = $('#select_country').val();
+
+        let myList = document.getElementById('visa-list');
+
+        if (myList) {
+            scrollPosition = myList.scrollTop;
+        }
 
         if (country) {
             selectedCountry = country;
@@ -149,7 +156,11 @@
                     data: JSON.stringify({country: selectedCountry}),
                     contentType: 'application/json',
                     success: function (visaFreeScore) {
-                        createVisaList(response, selectedCountry, visaFreeScore)
+                        createVisaList(response, selectedCountry, visaFreeScore);
+                        if (myList) {
+                            console.log(scrollPosition);
+                            document.getElementById('visa-list').scrollTop = scrollPosition;
+                        }
                     },
                     error: function (xhr, status, error) {
                         createVisaList(response, selectedCountry, 0)
@@ -222,6 +233,7 @@
 
         // Create container for '.visa-list'
         const container = document.createElement('div');
+        container.id = 'visa-list';
         container.classList.add('visa-list');
 
         // Create elements for each item in the data
