@@ -154,12 +154,12 @@
             selectedCountry = country;
         }
         $.post({
-            url: 'http://127.0.0.1:5000/country',
+            url: '/country',
             data: JSON.stringify({country: selectedCountry}),
             contentType: 'application/json',
             success: function (response) {
                 $.post({
-                    url: 'http://127.0.0.1:5000/score',
+                    url: '/score',
                     data: JSON.stringify({country: selectedCountry}),
                     contentType: 'application/json',
                     success: function (visaFreeScore) {
@@ -188,7 +188,7 @@
     // Populate country dropdown on page load
     $(document).ready(function () {
         init_map()
-        $.get('http://127.0.0.1:5000/countries', function (data, status) {
+        $.get('/countries', function (data, status) {
             // Assuming 'data' is a JSON object containing an array of countries
             for (let country of data) {
                 $("#select_country").append(new Option(country, country));
