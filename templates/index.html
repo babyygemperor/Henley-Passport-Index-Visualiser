@@ -69,6 +69,7 @@
 
     let m = null;
     let scrollPosition = 0;
+    let geoJsonLayer = null;
 
     function init_map() {
         if (m !== null) {
@@ -80,7 +81,7 @@
 
 
     function create_map(country, data) {
-        // Initialise the map:
+        // Initialize the map:
         if (m !== null) {
             m.remove();
         }
@@ -88,13 +89,16 @@
         new NoWrapTiles(m);
         document.getElementById('map-container').style.width = '77.5%'; // reset width
 
-
         // Create a colour dictionary
         let colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
+
         // Load the GeoJSON data
         fetch("{{url_for('static', filename='world.geojson')}}").then(response => response.json()).then(geojson_data => {
+            if (geoJsonLayer !== null) {
+                m.removeLayer(geoJsonLayer);
+            }
 
-            L.geoJSON(geojson_data, {
+            geoJsonLayer = L.geoJSON(geojson_data, {
                 style: function (feature) {
                     let value = 'N/A';  // default to 'N/A'
                     const found = data.find(row => row['country_A3'] === feature.properties.ISO_A3);
@@ -126,9 +130,9 @@
                     });
                 }
             }).addTo(m);
-        });
 
-        return m;
+            return m;
+        });
     }
 
     document.getElementById('select_country').addEventListener('keyup', function (event) {
