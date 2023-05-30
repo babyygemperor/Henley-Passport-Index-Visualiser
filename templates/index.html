@@ -120,6 +120,10 @@
                 },
                 onEachFeature: function (feature, layer) {
                     layer.bindTooltip('Country: ' + feature.properties.ADMIN);
+                    // Add a 'click' event listener
+                    layer.on('click', function () {
+                        fetchCountryData(feature.properties.ADMIN);
+                    });
                 }
             }).addTo(m);
         });
