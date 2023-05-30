@@ -29,7 +29,6 @@
     <div class="map-and-visa-container">
         <div class="map-container" id="map-container">
         </div>
-        <div class="visa-list-container"></div>
     </div>
 </div>
 <script>
@@ -60,9 +59,9 @@
     }
 
     class NoWrapTiles {
-        constructor(map) {
+        constructor(map, no_wrapping=true) {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                noWrap: true,
+                noWrap: no_wrapping,
                 attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
         }
@@ -70,13 +69,24 @@
 
     let m = null;
 
+    function init_map() {
+        if (m !== null) {
+            m.remove();
+        }
+        m = L.map('map-container', {center: [0, 0], zoom: 2, minZoom: 2 });
+        new NoWrapTiles(m, false);
+    }
+
+
     function create_map(country, data) {
         // Initialise the map:
         if (m !== null) {
             m.remove();
         }
-        m = L.map('map-container', {center: [20, 0], zoom: 2.4, minZoom: 2});
+        m = L.map('map-container', {center: [35, 0], zoom: 2.45, minZoom: 2, zoomSnap: 0.05});
         new NoWrapTiles(m);
+        document.getElementById('map-container').style.width = '80%'; // reset width
+
 
         // Create a colour dictionary
         console.log(country, data)
@@ -153,6 +163,7 @@
 
     // Populate country dropdown on page load
     $(document).ready(function () {
+        init_map()
         $.get('http://127.0.0.1:5000/countries', function (data, status) {
             // Assuming 'data' is a JSON object containing an array of countries
             for (let country of data) {
@@ -164,18 +175,18 @@
     function createVisaList(visa_data, selectedCountry, visaFreeScore) {
         // Get the parent container element where you want to append the '.visa-list'
         console.log(visa_data)
-        const parentContainer = document.querySelector('#map-and-visa-container');
+        const parentContainer = document.querySelector('.map-and-visa-container');
 
         // Check if '.visa-list-container' already exists, if not create it
-        let visaListContainer = document.querySelector('.visa-list-container');
+        let visaListContainer = parentContainer.querySelector('.visa-list-container');
         if (!visaListContainer) {
-            visaListContainer = document.createElement('div');
-            visaListContainer.classList.add('visa-list-container');
-        } else {
-            // Clear any existing content
-            visaListContainer.innerHTML = '';
+            var new_div = document.createElement('div');
+            new_div.className = 'visa-list-container';
+            parentContainer.appendChild(new_div);
         }
-
+        visaListContainer = parentContainer.querySelector('.visa-list-container');
+        // Clear any existing content
+        visaListContainer.innerHTML = '';
         // Create '.country-container' and its children
         const countryContainer = document.createElement('div');
         countryContainer.classList.add('country-container');
