@@ -89,7 +89,6 @@
 
 
         // Create a colour dictionary
-        console.log(country, data)
         let colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
         // Load the GeoJSON data
         fetch("{{url_for('static', filename='world.geojson')}}").then(response => response.json()).then(geojson_data => {
@@ -134,8 +133,12 @@
     });
 
 
-    function fetchCountryData() {
+    function fetchCountryData(country=null) {
         let selectedCountry = $('#select_country').val();
+
+        if (country) {
+            selectedCountry = country;
+        }
         $.post({
             url: 'http://127.0.0.1:5000/country',
             data: JSON.stringify({country: selectedCountry}),
@@ -149,6 +152,7 @@
                         createVisaList(response, selectedCountry, visaFreeScore)
                     },
                     error: function (xhr, status, error) {
+                        createVisaList(response, selectedCountry, 0)
                         console.log(error);
                     }
                 });
@@ -176,7 +180,6 @@
 
     function createVisaList(visa_data, selectedCountry, visaFreeScore) {
         // Get the parent container element where you want to append the '.visa-list'
-        console.log(visa_data)
         const parentContainer = document.querySelector('.map-and-visa-container');
 
         // Check if '.visa-list-container' already exists, if not create it
@@ -225,13 +228,22 @@
         for (const data of visa_data) {
 
             // Create elements for each item in the data
-            const link = document.createElement('a');
-            link.href = '/' + data.country;
-            link.style.textDecoration = 'none';
+            // const link = document.createElement('a');
+            // link.href = '/' + data.country;
+            // link.style.textDecoration = 'none';
 
             // Create item container
             const item = document.createElement('div');
             item.classList.add('visa-list-item');
+
+            let options = document.getElementById('select_country').options;
+
+            for (i = 0; i < options.length; i++) {
+                if (options[i].text === data.country) {
+                    item.onclick = fetchCountryData.bind(null, data.country);
+                    break;
+                }
+            }
 
             // Create flag image
             const img = document.createElement('img');
@@ -272,8 +284,8 @@
             item.appendChild(img);
             item.appendChild(countryCard);
             item.appendChild(visaStatusCard);
-            link.appendChild(item);
-            container.appendChild(link);
+            //link.appendChild(item);
+            container.appendChild(item);
         }
         // Append the created '.visa-list' container to the '.visa-list-container'
         visaListContainer.appendChild(container);
