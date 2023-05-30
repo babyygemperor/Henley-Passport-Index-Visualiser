@@ -59,7 +59,7 @@
     }
 
     class NoWrapTiles {
-        constructor(map, no_wrapping=true) {
+        constructor(map, no_wrapping = true) {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 noWrap: no_wrapping,
                 attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -73,7 +73,7 @@
         if (m !== null) {
             m.remove();
         }
-        m = L.map('map-container', {center: [0, 0], zoom: 2, minZoom: 2 });
+        m = L.map('map-container', {center: [0, 0], zoom: 2, minZoom: 2});
         new NoWrapTiles(m, false);
     }
 
@@ -83,9 +83,9 @@
         if (m !== null) {
             m.remove();
         }
-        m = L.map('map-container', {center: [35, 0], zoom: 2.45, minZoom: 2, zoomSnap: 0.05});
+        m = L.map('map-container', {center: [35, 10], zoom: 2.45, minZoom: 2, zoomSnap: 0.05});
         new NoWrapTiles(m);
-        document.getElementById('map-container').style.width = '80%'; // reset width
+        document.getElementById('map-container').style.width = '77.5%'; // reset width
 
 
         // Create a colour dictionary
@@ -141,8 +141,6 @@
             data: JSON.stringify({country: selectedCountry}),
             contentType: 'application/json',
             success: function (response) {
-                $('#map-container').empty(); // clear map container
-                $('#map-container').append(create_map(selectedCountry, response));
                 $.post({
                     url: 'http://127.0.0.1:5000/score',
                     data: JSON.stringify({country: selectedCountry}),
@@ -154,6 +152,10 @@
                         console.log(error);
                     }
                 });
+                $('#map-container').empty(); // clear map container
+                setTimeout(function () {
+                    $('#map-container').append(create_map(selectedCountry, response));
+                }, 100);
             },
             error: function (xhr, status, error) {
                 console.log(error);
