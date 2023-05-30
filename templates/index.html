@@ -32,8 +32,6 @@
         <div class="visa-list-container"></div>
     </div>
 </div>
-</div>
-</div>
 <script>
     let darkMode = localStorage.getItem('darkMode');
 
@@ -70,7 +68,7 @@
         }
     }
 
-    var m = null;
+    let m = null;
 
     function create_map(country, data) {
         // Initialise the map:
@@ -82,7 +80,7 @@
 
         // Create a colour dictionary
         console.log(country, data)
-        var colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
+        let colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
         // Load the GeoJSON data
         fetch("{{url_for('static', filename='world.geojson')}}").then(response => response.json()).then(geojson_data => {
 
@@ -135,7 +133,17 @@
             success: function (response) {
                 $('#map-container').empty(); // clear map container
                 $('#map-container').append(create_map(selectedCountry, response));
-                createVisaList(response)
+                $.post({
+                    url: 'http://127.0.0.1:5000/score',
+                    data: JSON.stringify({country: selectedCountry}),
+                    contentType: 'application/json',
+                    success: function (visaFreeScore) {
+                        createVisaList(response, selectedCountry, visaFreeScore)
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
             },
             error: function (xhr, status, error) {
                 console.log(error);
@@ -148,12 +156,14 @@
         $.get('http://127.0.0.1:5000/countries', function (data, status) {
             // Assuming 'data' is a JSON object containing an array of countries
             for (let country of data) {
-                $('#select_country').append(new Option(country, country));
+                $("#select_country").append(new Option(country, country));
             }
         });
     });
 
-    function createVisaList(visa_data) {
+    function createVisaList(visa_data, selectedCountry, visaFreeScore) {
+        // Get the parent container element where you want to append the '.visa-list'
+        console.log(visa_data)
         const parentContainer = document.querySelector('#map-and-visa-container');
 
         // Check if '.visa-list-container' already exists, if not create it
@@ -166,11 +176,37 @@
             visaListContainer.innerHTML = '';
         }
 
+        // Create '.country-container' and its children
+        const countryContainer = document.createElement('div');
+        countryContainer.classList.add('country-container');
+
+        const img = document.createElement('img');
+        img.src = `static/flags/flag_${visa_data[0]['Origin Code']}.svg`;
+        img.classList.add('main-country-flag');
+        img.alt = `${selectedCountry} flag`;
+
+        const countryContainerText = document.createElement('div');
+        countryContainerText.classList.add('country-container-text');
+
+        const selectedCountryH3 = document.createElement('h3');
+        selectedCountryH3.classList.add('selected-country');
+        selectedCountryH3.textContent = selectedCountry;
+
+        const visaFreeScoreP = document.createElement('p');
+        visaFreeScoreP.classList.add('visa-free-score');
+        visaFreeScoreP.textContent = `Visa Free Score: ${visaFreeScore}`;
+
+        countryContainerText.appendChild(selectedCountryH3);
+        countryContainerText.appendChild(visaFreeScoreP);
+
+        countryContainer.appendChild(img);
+        countryContainer.appendChild(countryContainerText);
+
+        visaListContainer.appendChild(countryContainer);
+
         // Create container for '.visa-list'
         const container = document.createElement('div');
         container.classList.add('visa-list');
-
-        // Create elements for each item in the data
 
         // Create elements for each item in the data
         for (const data of visa_data) {

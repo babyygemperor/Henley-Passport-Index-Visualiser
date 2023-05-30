@@ -61,6 +61,11 @@ def get_country_details():
     return jsonify(get_country_requirement_list(request.json.get('country')))
 
 
+@app.route('/score', methods=['POST'])
+def get_country_score():
+    return str(get_visa_free_score(request.json.get('country')))
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     show_map = False
