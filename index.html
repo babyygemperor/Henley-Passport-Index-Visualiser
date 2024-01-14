@@ -3,12 +3,11 @@
 <html lang="en-GB">
 <head>
     <title>Visa Requirements Map</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
           integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
           crossorigin=""/>
-
     <!-- Link to the Leaflet JavaScript Library -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -93,8 +92,8 @@
         let colour_dict = {'Visa Free': 'green', 'eVisa': 'yellow', 'Visa Required': 'red'};
 
         // Load the GeoJSON data
-        fetch("{{url_for('static', filename='world.geojson')}}").then(response => response.json()).then(geojson_data => {
-            if (geoJsonLayer !== null) {
+        fetch("world.geojson").then(response => response.json()).then(geojson_data => {
+	    if (geoJsonLayer !== null) {
                 m.removeLayer(geoJsonLayer);
             }
 
@@ -132,7 +131,7 @@
             }).addTo(m);
 
             return m;
-        });
+	});
     }
 
     document.getElementById('select_country').addEventListener('keyup', function (event) {
@@ -154,12 +153,12 @@
             selectedCountry = country;
         }
         $.post({
-            url: '/country',
+            url: 'https://passports.api.aamin.dev/country',
             data: JSON.stringify({country: selectedCountry}),
             contentType: 'application/json',
             success: function (response) {
                 $.post({
-                    url: '/score',
+                    url: 'https://passports.api.aamin.dev/score',
                     data: JSON.stringify({country: selectedCountry}),
                     contentType: 'application/json',
                     success: function (visaFreeScore) {
@@ -188,7 +187,7 @@
     // Populate country dropdown on page load
     $(document).ready(function () {
         init_map()
-        $.get('/countries', function (data, status) {
+        $.get('https://passports.api.aamin.dev/countries', function (data, status) {
             // Assuming 'data' is a JSON object containing an array of countries
             for (let country of data) {
                 $("#select_country").append(new Option(country, country));
@@ -215,7 +214,7 @@
         countryContainer.classList.add('country-container');
 
         const img = document.createElement('img');
-        img.src = `static/flags/flag_${visa_data[0]['Origin Code']}.svg`;
+        img.src = `flags/flag_${visa_data[0]['Origin Code']}.svg`;
         img.classList.add('main-country-flag');
         img.alt = `${selectedCountry} flag`;
 
@@ -266,7 +265,7 @@
 
             // Create flag image
             const img = document.createElement('img');
-            img.src = '/static/flags/flag_' + data.country_A3 + '.svg';
+            img.src = 'flags/flag_' + data.country_A3 + '.svg';
             img.classList.add('country-flag');
             img.alt = data.country + ' flag';
 
