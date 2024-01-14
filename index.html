@@ -153,12 +153,12 @@
             selectedCountry = country;
         }
         $.post({
-            url: 'https://passports.api.aamin.dev/country',
+            url: 'https://passportsservice.aamin.dev/country',
             data: JSON.stringify({country: selectedCountry}),
             contentType: 'application/json',
             success: function (response) {
                 $.post({
-                    url: 'https://passports.api.aamin.dev/score',
+                    url: 'https://passportsservice.api.aamin.dev/score',
                     data: JSON.stringify({country: selectedCountry}),
                     contentType: 'application/json',
                     success: function (visaFreeScore) {
@@ -187,7 +187,7 @@
     // Populate country dropdown on page load
     $(document).ready(function () {
         init_map()
-        $.get('https://passports.api.aamin.dev/countries', function (data, status) {
+        $.get('https://passportsservice.aamin.dev/countries', function (data, status) {
             // Assuming 'data' is a JSON object containing an array of countries
             for (let country of data) {
                 $("#select_country").append(new Option(country, country));
