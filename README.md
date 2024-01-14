@@ -1,6 +1,6 @@
 # Visa Requirements Map
 
-This project is a Flask web application that visualises the visa requirements for each country. It allows you to select a country and see the visa requirements for that country. The requirements are displayed on a world map and also in a list. The visa requirements are shown using colour-coded regions on the world map: blue for the selected country, green for visa-free countries, yellow for countries requiring an eVisa, red for countries requiring a visa, and grey for countries for which there is no data.
+This project is a Flask web application hosted on https://passports.aamin.dev that visualises the visa requirements for each country. It allows you to select a country and see the visa requirements for that country. The requirements are displayed on a world map and also in a list. The visa requirements are shown using colour-coded regions on the world map: blue for the selected country, green for visa-free countries, yellow for countries requiring an eVisa, red for countries requiring a visa, and grey for countries for which there is no data.
 
 ## Getting Started
 
